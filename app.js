@@ -31,7 +31,7 @@ app.set('trust proxy', 1)
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 1000,
     message: 'Too many requests, please try again later'
   })
 )
@@ -42,18 +42,23 @@ app.use(cors())
 app.use(xss())
 app.use(rateLimiter())
 
-app.get('/', (req, res) => {
-  res.send('<h1>TASK API</h1><a href="/api-docs">Documentation</a>')
-})
+//app.get('/', (req, res) => {
+  //res.send('<h1>TASK API</h1><a href="/api-docs">Documentation</a>')
+//})
+
+app.use(express.static("public"))
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 app.use('/api/auth', authRoutes)
+
+app.use(authenticateUser)
+
 app.use('/api/tasks', tasksRoutes)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
-app.use(authenticateUser)
+
 
 const port = process.env.PORT || 3000
 
